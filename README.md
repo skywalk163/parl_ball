@@ -6,3 +6,4 @@
 输出信息中，点代表失球，叹号代表接到球！
 
 运行python train.py即可。
+第二个项目：python paddleball.py
