@@ -281,9 +281,10 @@ class BallAgent(parl.Agent):
         return cost
 OBS_DIM = 5
 ACT_DIM = 3
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 1e-2
+GAMMA=0.98
 model = BallModel(act_dim=3)
-alg = parl.algorithms.PolicyGradient(model, lr=1e-3)
+alg = parl.algorithms.PolicyGradient(model, lr=LEARNING_RATE)
 #alg=parl.algorithms.DQN(model,lr=0.001,gamma=0.99)
 agent = BallAgent(alg, obs_dim=OBS_DIM, act_dim=3)
 #成功执行
@@ -307,10 +308,23 @@ def run_episode(env, agent, train_or_test='train'):
         if done:
             break
     return obs_list, action_list, reward_list
-def calc_reward_to_go(reward_list):
-    for i in range(len(reward_list) - 2, -1, -1):
-        reward_list[i] += reward_list[i + 1]
-    return np.array(reward_list)
+
+# def calc_reward_to_go(reward_list):
+#     for i in range(len(reward_list) - 2, -1, -1):
+#         reward_list[i] += reward_list[i + 1]
+#     return np.array(reward_list)
+
+def calc_reward_to_go(reward_list, gamma=0.99):
+    """calculate discounted reward"""
+    reward_arr = np.array(reward_list)
+    for i in range(len(reward_arr) - 2, -1, -1):
+        # G_t = r_t + γ·r_t+1 + ... = r_t + γ·G_t+1
+        reward_arr[i] += gamma * reward_arr[i + 1]
+    # normalize episode rewards
+#     dctmp = reward_arr - np.mean(reward_arr)
+#     dctmp1 = dctmp / np.std(reward_arr)
+#     reward_arr=dctmp1
+    return reward_arr
 
 
 #env = gym.make("CartPole-v0")
@@ -318,15 +332,17 @@ env = Paddle()
 for i in range(1000):
       obs_list, action_list, reward_list = run_episode(env, agent)
       if i % 10 == 0:
-          logger.info("Episode {}, Reward Sum {}.".format(i, sum(reward_list)))
+          logger.info("\nEpisode {}, Reward Sum {}.".format(i, sum(reward_list)))
 
       batch_obs = np.array(obs_list)
       batch_action = np.array(action_list)
       #batch_reward = calc_discount_norm_reward(reward_list, GAMMA)
-      batch_reward = calc_reward_to_go(reward_list)
+      batch_reward = calc_reward_to_go(reward_list, GAMMA)
 
       agent.learn(batch_obs, batch_action, batch_reward)
       if (i + 1) % 100 == 0:
           _, _, reward_list = run_episode(env, agent, train_or_test='test')
           total_reward = np.sum(reward_list)
           logger.info('Test reward: {}'.format(total_reward))
+        
+agent.save('./paddleball.ckpt')
