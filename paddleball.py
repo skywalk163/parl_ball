@@ -2,7 +2,7 @@
 import numpy as np
 import parl
 import os.path
-import paddle
+#import paddle
 import paddle.fluid as fluid
 from parl.utils import logger
 # Author for Paddle(): Shiva Verma
@@ -154,7 +154,7 @@ class Paddle():
             self.hit += 1
             self.score.clear()
             self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
-            self.reward += 3
+            self.reward += 30
             #self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
 
 
@@ -204,9 +204,9 @@ class Paddle():
 #             self.score.write("Hit: {}   Missed: {}".format(self.hit, self.miss), align='center', font=('Courier', 24, 'normal'))
 #             logger.info(f"^-^ Good job!Hit: {self.hit}   Missed: {self.miss}")
             print("!", end=" ")
-            self.reward += 3 #3
+            self.reward += 5 #3
 
-
+#这里好像有点问题，
 
 # while True:
 #
@@ -220,10 +220,14 @@ class BallModel(parl.Model):
         hid1_size = act_dim * 10
 
         self.fc1 = layers.fc(size=hid1_size, act='tanh')
+
+        #self.fc3 = layers.fc(size=hid1_size, act='tanh')
+
         self.fc2 = layers.fc(size=act_dim, act='softmax')
 
     def forward(self, obs):
         out = self.fc1(obs)
+        #out = self.fc3(out)
         out = self.fc2(out)
         return out
     
@@ -235,14 +239,14 @@ class BallAgent(parl.Agent):
 
     def build_program(self):
         self.pred_program = fluid.Program()
-        self.train_program = fluid.Program()
+        self.learn_program = fluid.Program() #train_program
 
         with fluid.program_guard(self.pred_program):
             obs = layers.data(
                 name='obs', shape=[self.obs_dim], dtype='float32')
             self.act_prob = self.alg.predict(obs)
 
-        with fluid.program_guard(self.train_program):
+        with fluid.program_guard(self.learn_program):
             obs = layers.data(
                 name='obs', shape=[self.obs_dim], dtype='float32')
             act = layers.data(name='act', shape=[1], dtype='int64')
@@ -277,12 +281,12 @@ class BallAgent(parl.Agent):
             'reward': reward.astype('float32')
         }
         cost = self.fluid_executor.run(
-            self.train_program, feed=feed, fetch_list=[self.cost])[0]
+            self.learn_program, feed=feed, fetch_list=[self.cost])[0]
         return cost
 OBS_DIM = 5
 ACT_DIM = 3
-LEARNING_RATE = 1e-2
-GAMMA=0.98
+LEARNING_RATE = 5e-3
+GAMMA=0.99
 model = BallModel(act_dim=3)
 alg = parl.algorithms.PolicyGradient(model, lr=LEARNING_RATE)
 #alg=parl.algorithms.DQN(model,lr=0.001,gamma=0.99)
@@ -321,9 +325,9 @@ def calc_reward_to_go(reward_list, gamma=0.99):
         # G_t = r_t + γ·r_t+1 + ... = r_t + γ·G_t+1
         reward_arr[i] += gamma * reward_arr[i + 1]
     # normalize episode rewards
-#     dctmp = reward_arr - np.mean(reward_arr)
-#     dctmp1 = dctmp / np.std(reward_arr)
-#     reward_arr=dctmp1
+    dctmp = reward_arr - np.mean(reward_arr)
+    dctmp1 = dctmp / np.std(reward_arr)
+    reward_arr=dctmp1
     return reward_arr
 
 
@@ -344,5 +348,9 @@ for i in range(1000):
           _, _, reward_list = run_episode(env, agent, train_or_test='test')
           total_reward = np.sum(reward_list)
           logger.info('Test reward: {}'.format(total_reward))
+                  
+          agent.save('./paddleball_test.ckpt')
+        
         
 agent.save('./paddleball.ckpt')
+
