@@ -5,8 +5,8 @@ import os.path
 import paddle
 import paddle.fluid as fluid
 from parl.utils import logger
-# Author: Shiva Verma
-
+# Author for Paddle(): Shiva Verma
+# Author :skywalk
 
 import turtle as t
 
