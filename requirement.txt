@@ -1,4 +1,0 @@
-turtle
-numpy 
-paddlepaddle==1.6.3
-parl==1.3.1
