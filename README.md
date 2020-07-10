@@ -55,6 +55,7 @@ GAMMA=0.98
 
 2 将obs输出数据由5项该写成4项
 return [self.paddle.xcor()*0.01, self.ball.xcor()*0.01, self.ball.ycor()*0.01, self.ball.dx, self.ball.dy]
+
 改成：
 return [self.paddle.xcor()*0.01, self.ball.xcor()*0.01, self.ball.ycor()*0.01, self.ball.dx/3*2+self.ball.dy/3]
 
