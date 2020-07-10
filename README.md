@@ -24,6 +24,17 @@
 Episode 230, Reward Sum -1.6699999999999569.
 ! ! ! . ! ! ! . ! ! ! . ! ! ! . ! ! ! . ! ! ! . ! ! ! . ! ! ! . ! ! ! . ! ! ! . 
 可以明显看到每次都是同样的接到3个球。如果使用图形方式，会看到球拍一直在最左边，在接到3个球后，第四个球的时候球拍不会向右移动，导致丢球。
+PG运行1000episode的loss变化：
+[07-10 23:45:24 MainThread @pb.py:343] Episode 0, Reward Sum -3.0899999999999928.
+[07-10 23:49:42 MainThread @pb.py:343] Episode 100, Reward Sum -0.7899999999999388.
+[07-10 23:53:30 MainThread @pb.py:343] Episode 200, Reward Sum -2.179999999999981.
+[07-10 23:57:48 MainThread @pb.py:343] Episode 300, Reward Sum -1.5299999999999745.
+[07-11 00:02:35 MainThread @pb.py:343] Episode 400, Reward Sum -3.06.
+[07-11 00:07:15 MainThread @pb.py:343] Episode 500, Reward Sum 1.0400000000000542.
+[07-11 00:11:15 MainThread @pb.py:343] Episode 600, Reward Sum 1.7000000000000455.
+[07-11 00:15:17 MainThread @pb.py:343] Episode 700, Reward Sum 2.950000000000035.
+[07-11 00:19:16 MainThread @pb.py:343] Episode 800, Reward Sum 1.630000000000047.
+[07-11 00:23:16 MainThread @pb.py:343] Episode 900, Reward Sum 3.860000000000028.
 
 另外就是AI因为步数负反馈，会导致产生懒惰的情况，也就是不动，硬吃-3的reward
 第三个项目表现不错！第三个项目相比前两个PQ策略项目，修改的地方有：
@@ -36,6 +47,10 @@ return [self.paddle.xcor()*0.01, self.ball.xcor()*0.01, self.ball.ycor()*0.01, s
 return [self.paddle.xcor()*0.01, self.ball.xcor()*0.01, self.ball.ycor()*0.01, self.ball.dx/3*2+self.ball.dy/3]
 
 
+PG策略运行图：
+![](https://github.com/skywalk163/parl_ball/blob/master/img/pbpg.gif)
+DQN策略运行图
+![](https://github.com/skywalk163/parl_ball/blob/master/img/pbdqn%2B.gif)
 
 
 
