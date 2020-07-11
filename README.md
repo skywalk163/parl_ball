@@ -81,6 +81,18 @@ return [self.paddle.xcor()*0.01, self.ball.xcor()*0.01, self.ball.ycor()*0.01, s
 3 将移动一次的反馈由-0.1减少到-0.01，以降低PG策略懒惰到不动的情况发生。
 
 
+另外PG策略验证的时候，程序也有点问题，导致复现分数很低，我进行了修改，在使用python pb.py 运行后，会生成paddleball.ckpt模型文件，然后运行python pbtest.py进行图形界面验证，它会自动调用前面生成的paddleball.ckpt模型文件，实验下来，可以接球几十次到上百次。log文件如下：
+
+[07-11 21:40:31 MainThread @pbtest.py:373] Test reward: 237.87000000000006
+
+[07-11 21:47:13 MainThread @pbtest.py:373] Test reward: 444.1800000000001
+
+[07-11 21:49:01 MainThread @pbtest.py:373] Test reward: 152.84000000000003
+
+[07-11 21:49:35 MainThread @pbtest.py:373] Test reward: 50.34000000000001
+
+[07-11 21:57:04 MainThread @pbtest.py:373] Test reward: 603.6500000000001
+
 
 PG策略运行图：
 
